@@ -21,8 +21,13 @@ namespace ToadiDriver.ViewModels {
 			this.CmdLeft = new Command(() => _toadi.Spin(this.Config.SpinRotation, this.Config.SpinSpeed));
 			this.CmdRight = new Command(() => _toadi.Spin(this.Config.SpinRotation * -1.00, this.Config.SpinSpeed));
 
+			this.CmdDock = new Command(async () => {
+				await _toadi.StopManualDriving();
+				await Task.Delay(500);
+				await _toadi.StartDocking();
+			});
 
-			
+
 		}
 
 
@@ -36,6 +41,7 @@ namespace ToadiDriver.ViewModels {
 		public ICommand CmdBackward { get; }
 		public ICommand CmdLeft { get; }
 		public ICommand CmdRight { get; }
+		public ICommand CmdDock { get; set; }
 
 
 
@@ -46,6 +52,7 @@ namespace ToadiDriver.ViewModels {
 			_toadi = new Toadi.Net.Toadi(this.Config.IpAddress);
 
 
+			_ = _toadi.StartManualDriving();
 			_showImage = true;
 			//			_ = this.UpdateImage();
 
@@ -61,6 +68,7 @@ namespace ToadiDriver.ViewModels {
 		}
 
 		public void Disconnect() {
+			_ = _toadi.StopManualDriving();
 			_showImage = false;
 		}
 

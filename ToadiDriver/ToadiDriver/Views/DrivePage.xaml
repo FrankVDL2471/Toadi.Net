@@ -54,6 +54,8 @@
 			<Button Text="Forward" Grid.Column="2" Grid.Row="0" Command="{Binding CmdForward}" />
 			<Button Text="Back" Grid.Column="2" Grid.Row="1" Command="{Binding CmdBackward}" />
 			<Button Text="Right" Grid.Column="3" Grid.Row="0" Grid.RowSpan="2"  Command="{Binding CmdRight}" />
+
+			<Button Text="Dock" Grid.Column="0" Grid.Row="0" BackgroundColor="LightGray" Command="{Binding CmdDock}" />
 		</Grid>
 
 	</Grid>

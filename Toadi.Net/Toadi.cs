@@ -27,6 +27,21 @@ namespace Toadi.Net {
 			return _conn.Send($"/navigation/backwards?speed={speed.ToString(CultureInfo.InvariantCulture)}&distance={distance.ToString(CultureInfo.InvariantCulture)}&turnRaduis={turn.ToString(CultureInfo.InvariantCulture)}&rotation={rotation.ToString(CultureInfo.InvariantCulture)}&powerLimit=1.0");
 		}
 
+		public Task<bool> StartManualDriving() {
+			return _conn.Send("/navigation/startmanualdriving");
+		}
+		public Task<bool> StopManualDriving() {
+			return _conn.Send("/navigation/stopmanualdriving");
+		}
+
+		public Task<bool> StartDocking() {
+			return _conn.Send("/navigation/startdocking");
+		}
+		public Task<bool> StopDocking() {
+			return _conn.Send("/navigation/stopdocking");
+		}
+
+
 		public Task<byte[]> GetImage() {
 			return _conn.GetData($"/image/front/img.jpg?timestamp={DateTime.Now.Ticks}");
 		}
