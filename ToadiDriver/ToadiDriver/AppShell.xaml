@@ -31,7 +31,7 @@
 
     <TabBar>
         <ShellContent Title="Settings" Icon="icon_about.png" Route="Settings" ContentTemplate="{DataTemplate local:SettingsPage}" />
-        <ShellContent Title="Drive" Icon="icon_feed.png" Route="Drive" ContentTemplate="{DataTemplate local:DrivePage}" />
+        <ShellContent Title="Drive" Icon="icon_steer.png" Route="Drive" ContentTemplate="{DataTemplate local:DrivePage}" />
     </TabBar>
 
 </Shell>
