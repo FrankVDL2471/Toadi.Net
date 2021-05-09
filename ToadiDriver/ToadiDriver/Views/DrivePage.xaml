@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ToadiDriver.Views.DrivePage"
+						 xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
+             xmlns:vm="clr-namespace:ToadiDriver.ViewModels"
+             Title="{Binding Title}">
+
+	<ContentPage.BindingContext>
+		<vm:DriveViewModel />
+	</ContentPage.BindingContext>
+
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<Color x:Key="Accent">#96d1ff</Color>
+		</ResourceDictionary>
+	</ContentPage.Resources>
+
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+
+
+		<skia:SKCanvasView x:Name="canvasView" Grid.Row="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"
+											PaintSurface="OnCanvasViewPaintSurface">
+			<!--<skia:SKCanvasView.GestureRecognizers>
+				<TapGestureRecognizer Tapped="OnCanvasViewTapped" />
+			</skia:SKCanvasView.GestureRecognizers>-->
+		</skia:SKCanvasView>
+
+
+		<!--<Grid Grid.Row="0" x:Name="placeHolder" >
+			<Image x:Name="Image1" Margin="0" Grid.Row="0"  Aspect="AspectFill" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+			<Image x:Name="Image2" Margin="0" Grid.Row="0"  Aspect="AspectFill" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+		</Grid>-->
+
+		<Grid Grid.Row="1" Margin="10">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+
+			<Button Text="Left" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"  Command="{Binding CmdLeft}" />
+			<Button Text="Forward" Grid.Column="2" Grid.Row="0" Command="{Binding CmdForward}" />
+			<Button Text="Back" Grid.Column="2" Grid.Row="1" Command="{Binding CmdBackward}" />
+			<Button Text="Right" Grid.Column="3" Grid.Row="0" Grid.RowSpan="2"  Command="{Binding CmdRight}" />
+		</Grid>
+
+	</Grid>
+	
+
+</ContentPage>

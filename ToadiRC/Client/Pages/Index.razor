@@ -1,0 +1,121 @@
+﻿@page "/"
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@using Models
+
+<h1>Toadi RC</h1>
+
+
+@if (showConfig) {
+
+	<EditForm Model=@ToadiConfig OnSubmit=@FormSubmitted>
+		<div class="form-group">
+			<label for="IpAddress">IP Address</label>
+			<InputText @bind-Value=ToadiConfig.IpAddress class="form-control" id="IpAddress" />
+		</div>
+		<div class="form-group">
+				<label for="Port">Port</label>
+				<InputNumber @bind-Value=ToadiConfig.Port class="form-control" id="Port" />
+			</div>
+		<input type="submit" class="btn btn-primary" value="Save" />
+	</EditForm>
+} else {
+
+	<div>
+
+		<h2>Live Camera View</h2>
+		<div class="container-fluid">
+			@*<div class="row">
+				<div class="col">
+					<span class="btn-group-toggle" data-toggle="buttons">
+						<label class="btn btn-primary">
+							<input type="checkbox"> Stream
+						</label>
+					</span>
+
+					<span class="btn-group-toggle" data-toggle="buttons">
+						<label class="btn btn-default active">
+							<input type="checkbox" checked onchange="liveCameraAndOverlay.showItem('img.jpg', this.checked);"> Image
+						</label>
+					</span>
+
+					<span class="btn-group-toggle" data-toggle="buttons">
+						<label class="btn btn-default">
+							<input type="checkbox" onchange="liveCameraAndOverlay.showItem('scene.svg', this.checked);"> Scene
+						</label>
+					</span>
+
+					<span class="btn-group-toggle" data-toggle="buttons">
+						<label class="btn btn-default">
+							<input type="checkbox" onchange="liveCameraAndOverlay.showItem('grass.svg', this.checked);"> Grass
+						</label>
+					</span>
+
+					<span class="btn-group-toggle" data-toggle="buttons">
+						<label class="btn btn-default">
+							<input type="checkbox" onchange="liveCameraAndOverlay.showItem('legend.svg', this.checked);"> Legend
+						</label>
+					</span>
+
+				</div>
+			</div>*@
+			<div class="row">
+				<div class="col">
+					<div style="position:relative;left:0;top:1px;height:480px;width:640px">
+						<div style="position:absolute;left:0;top:0px" id="livecam">
+							<img src="@imgData" style="display:inline" />
+						</div>
+						<div style="position:absolute;left:0;top:0px" id="liveOverlaySceneDetection"></div>
+						<div style="position:absolute;left:0;top:0px" id="liveOverlayGrassDetection"></div>
+						<div style="position:absolute;left:0;top:0px" id="liveOverlayLegend"></div>
+						<div style="position:absolute;left:0;top:0px" id="liveOverlaySystem"></div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+
+	</div>
+
+}
+
+
+@code {
+	private bool showConfig = true;
+	private ToadiConfig ToadiConfig = new ToadiConfig();
+
+	private string imgData = string.Empty;
+
+
+	protected override async Task OnInitializedAsync() {
+		this.ToadiConfig = await localStorage.GetItemAsync<Models.ToadiConfig>("ToadiCfg");
+		if (this.ToadiConfig == null) this.ToadiConfig = new Models.ToadiConfig();
+		this.showConfig = string.IsNullOrEmpty(this.ToadiConfig?.IpAddress);
+
+
+		_ = Task.Run(async () => {
+			while (true) {
+				long imgTimestamp = DateTime.Now.Ticks;
+				imgData = await GetImageAsBase64Url($"http://{ToadiConfig.IpAddress}:{ToadiConfig.Port}/image/front/img.jpg?timestamp={imgTimestamp}");
+				base.StateHasChanged();
+				await Task.Delay(500);
+			}
+		});
+
+	}
+
+	async void FormSubmitted() {
+		await localStorage.SetItemAsync<Models.ToadiConfig>("ToadiCfg", this.ToadiConfig);
+		this.showConfig = string.IsNullOrEmpty(this.ToadiConfig?.IpAddress);
+		base.StateHasChanged();
+	}
+
+	public async static Task<string> GetImageAsBase64Url(string url) {
+		using (var handler = new HttpClientHandler {  })
+		using (var client = new HttpClient(handler)) {
+			var bytes = await client.GetByteArrayAsync(url);
+			return "image/jpeg;base64," + Convert.ToBase64String(bytes);
+		}
+	}
+}

@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ToadiDriver.Views.SettingsPage"
+             xmlns:vm="clr-namespace:ToadiDriver.ViewModels"
+             Title="{Binding Title}">
+
+	<ContentPage.BindingContext>
+		<vm:SettingsViewModel />
+	</ContentPage.BindingContext>
+
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<Color x:Key="Accent">#96d1ff</Color>
+		</ResourceDictionary>
+	</ContentPage.Resources>
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+
+
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+
+		</Grid.RowDefinitions>
+
+		<Label Grid.Row="0" Grid.Column="0" Text="Ip Address :" />
+		<Entry Grid.Row="0" Grid.Column="1" Text="{Binding Path=Config.IpAddress}" />
+
+		<Label Grid.Row="1" Grid.Column="0" Text="Spin Speed :" />
+		<Entry Grid.Row="1" Grid.Column="1" Text="{Binding Path=Config.SpinSpeed}" />
+
+		<Label Grid.Row="2" Grid.Column="0" Text="Spin Rotation :" />
+		<Entry Grid.Row="2" Grid.Column="1" Text="{Binding Path=Config.SpinRotation}" />
+
+		<Label Grid.Row="3" Grid.Column="0" Text="Drive Speed :" />
+		<Entry Grid.Row="3" Grid.Column="1" Text="{Binding Path=Config.DriveSpeed}" />
+		
+		<Label Grid.Row="4" Grid.Column="0" Text="Drive Distance :" />
+		<Entry Grid.Row="4" Grid.Column="1" Text="{Binding Path=Config.DriveDistance}" />
+
+		
+		<Button Margin="0,10,0,0" Text="Save"
+						Grid.Row="6" Grid.ColumnSpan="2"
+                        Command="{Binding Path=SaveCommand}"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White" />
+
+	</Grid>
+
+</ContentPage>
