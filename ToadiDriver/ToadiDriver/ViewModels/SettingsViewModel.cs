@@ -6,7 +6,7 @@ using Xamarin.Forms;
 namespace ToadiDriver.ViewModels {
 	public class SettingsViewModel : BaseViewModel {
 		public SettingsViewModel() {
-			Title = "Settings";
+			Title = "Toadi Driver - Settings";
 
 			this.Config = Models.AppConfig.Instance;
 			SaveCommand = new Command(() => {

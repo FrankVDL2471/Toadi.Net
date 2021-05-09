@@ -48,7 +48,7 @@ namespace ToadiDriver.Droid.JoystickAndroidCustomControl {
       inflater.Inflate(Resource.Layout.joystickMainLayout, this);
 
       SetMinimumWidth(200);
-      SetMinimumHeight(500);
+      SetMinimumHeight(200);
 
       _myJoyStick = FindViewById<LinearLayout>(Resource.Id.stickview);
 

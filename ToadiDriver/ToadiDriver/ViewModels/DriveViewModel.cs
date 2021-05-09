@@ -12,7 +12,7 @@ namespace ToadiDriver.ViewModels {
 		private Toadi.Net.Toadi _toadi;
 
 		public DriveViewModel() {
-			Title = "Drive";
+			Title = "Toadi Driver";
 
 			this.Config = Models.AppConfig.Instance;
 
