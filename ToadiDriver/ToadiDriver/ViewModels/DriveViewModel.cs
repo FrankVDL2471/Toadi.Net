@@ -67,6 +67,10 @@ namespace ToadiDriver.ViewModels {
 		}
 
 
+		public bool ShowGrass { get; set; }
+
+		public bool ShowScene { get; set; }
+
 
 		private bool _manualMode = false;
 		public bool Connect() {

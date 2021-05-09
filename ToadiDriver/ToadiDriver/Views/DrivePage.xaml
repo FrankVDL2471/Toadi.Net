@@ -48,6 +48,8 @@
 			<Grid Grid.Row="0" Grid.Column="0">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+					<RowDefinition Height="Auto" />
 					<RowDefinition Height="Auto" />
 				</Grid.RowDefinitions>
 				<Grid.ColumnDefinitions>
@@ -56,6 +58,11 @@
 				</Grid.ColumnDefinitions>
 
 				<Button Text="Dock" Grid.Column="0" Grid.Row="0" BackgroundColor="LightGray" Command="{Binding CmdDock}" />
+
+				<Label Grid.Column="0" Grid.Row="2" Text="Grass" />
+				<Switch Grid.Column="1" Grid.Row="2" IsToggled="{Binding Path=ShowGrass, Mode=TwoWay}" />
+				<Label Grid.Column="0" Grid.Row="3" Text="Scene" />
+				<Switch Grid.Column="1" Grid.Row="3" IsToggled="{Binding Path=ShowScene, Mode=TwoWay}" />
 			</Grid>
 			
 

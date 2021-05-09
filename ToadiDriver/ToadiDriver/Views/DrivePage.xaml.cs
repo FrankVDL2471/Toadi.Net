@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using SkiaSharp.Extended.Svg;
 using SkiaSharp.Views.Forms;
 using System;
 using System.ComponentModel;
@@ -63,23 +64,73 @@ namespace ToadiDriver.Views {
 			SKImageInfo info = args.Info;
 			SKSurface surface = args.Surface;
 
+			DriveViewModel vm = this.BindingContext as DriveViewModel;
+			if (vm == null) return;
+
+
 			using (var webClient = new WebClient()) {
+				var canvas = surface.Canvas;
+
 				var stream = webClient.DownloadData($"http://{Models.AppConfig.Instance.IpAddress}:8080/image/front/img.jpg?timestamp={DateTime.Now.Ticks}");
+				var img = SKBitmap.Decode(stream);
 
-				using (var canvas = surface.Canvas) {
-					// use KBitmap.Decode to decode the byte[] in jpeg format 
-					using (var bitmap = SKBitmap.Decode(stream)) {
 
-						using (var paint = new SKPaint()) {
-							// clear the canvas / fill with black
-							//canvas.DrawColor(SKColors.Black);
-							canvas.DrawBitmap(bitmap, canvas.LocalClipBounds);
-							//canvas.DrawBitmap(bitmap, 0, 0, paint); // SKRect.Create(640, 480)
-							//canvas.DrawBitmap(bitmap, SKRect.Create(640, 480), SKRect.Create((float)canvasView.Width, (float)canvasView.Height));
-						}
+				SKRect bounds = canvas.LocalClipBounds;
+				float xRatio = (float)info.Width / (float)img.Width;
+				float yRatio = (float)info.Height / (float)img.Height;
+				canvas.Scale(xRatio, yRatio);
+
+
+				canvas.DrawBitmap(img, 0,0); //, canvas.LocalClipBounds);
+
+				if (vm.ShowGrass) {
+					try {
+						var streamGrass = webClient.DownloadData($"http://{Models.AppConfig.Instance.IpAddress}:8080/image/front/grass.svg?timestamp={DateTime.Now.Ticks}&layerItems=detection&layerItems=surface&layerItems=robotMotionState&layerItems=inferenceType");
+						//SKSvg svgGrass = new SkiaSharp.SKSvg();
+						SkiaSharp.Extended.Svg.SKSvg svg = new SkiaSharp.Extended.Svg.SKSvg();
+						svg.Load(new MemoryStream(streamGrass));
+
+						canvas.DrawPicture(svg.Picture);
+
+					} catch (Exception err) {
+					}
+					
+				}
+				if (vm.ShowScene) {
+					try {
+						var streamScene = webClient.DownloadData($"http://{Models.AppConfig.Instance.IpAddress}:8080/image/front/scene.svg?timestamp={DateTime.Now.Ticks}&layerItems=GeneralObjectDetectionTransformer&layerItems=ToadiObjectDetectionTransformer&layerItems=ChargingStationPoseTransformer");
+
+						SkiaSharp.Extended.Svg.SKSvg svgScene = new SkiaSharp.Extended.Svg.SKSvg();
+						svgScene.Load(new MemoryStream(streamScene));
+
+						
+						canvas.DrawPicture(svgScene.Picture);
+						
+					} catch (Exception err) {
 
 					}
 				}
+
+
+
+
+				img.Dispose();
+				canvas.Dispose();
+
+				//using (var canvas = surface.Canvas) {
+				//	// use KBitmap.Decode to decode the byte[] in jpeg format 
+				//	using (var bitmap = SKBitmap.Decode(stream)) {
+
+				//		using (var paint = new SKPaint()) {
+				//			// clear the canvas / fill with black
+				//			//canvas.DrawColor(SKColors.Black);
+				//			canvas.DrawBitmap(bitmap, canvas.LocalClipBounds);
+				//			//canvas.DrawBitmap(bitmap, 0, 0, paint); // SKRect.Create(640, 480)
+				//			//canvas.DrawBitmap(bitmap, SKRect.Create(640, 480), SKRect.Create((float)canvasView.Width, (float)canvasView.Height));
+				//		}
+
+				//	}
+				//}
 			}
  		}
 
