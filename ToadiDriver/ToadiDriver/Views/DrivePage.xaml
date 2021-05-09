@@ -48,6 +48,7 @@
 			<Grid Grid.Row="0" Grid.Column="0">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
 					<RowDefinition Height="*" />
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="Auto" />
@@ -57,12 +58,15 @@
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
 
-				<Button Text="Dock" Grid.Column="0" Grid.Row="0" BackgroundColor="LightGray" Command="{Binding CmdDock}" />
+				<Button Text="Dock" Grid.Column="0" Grid.Row="0" BackgroundColor="LightGreen" Command="{Binding CmdDock}" />
+				<Button Text="Release" Grid.Column="1" Grid.Row="0" BackgroundColor="OrangeRed" Command="{Binding CmdRelease}" IsEnabled="{Binding Status.EmergencyLock}" />
 
-				<Label Grid.Column="0" Grid.Row="2" Text="Grass" />
-				<Switch Grid.Column="1" Grid.Row="2" IsToggled="{Binding Path=ShowGrass, Mode=TwoWay}" />
-				<Label Grid.Column="0" Grid.Row="3" Text="Scene" />
-				<Switch Grid.Column="1" Grid.Row="3" IsToggled="{Binding Path=ShowScene, Mode=TwoWay}" />
+				<Label Text="{Binding Status.Error}" Grid.Row="1" Grid.ColumnSpan="2" />
+
+				<Label Grid.Column="0" Grid.Row="3" Text="Grass" />
+				<Switch Grid.Column="1" Grid.Row="3" IsToggled="{Binding Path=ShowGrass, Mode=TwoWay}" />
+				<Label Grid.Column="0" Grid.Row="4" Text="Scene" />
+				<Switch Grid.Column="1" Grid.Row="4" IsToggled="{Binding Path=ShowScene, Mode=TwoWay}" />
 			</Grid>
 			
 

@@ -80,7 +80,6 @@ namespace ToadiDriver.Views {
 				float yRatio = (float)info.Height / (float)img.Height;
 				canvas.Scale(xRatio, yRatio);
 
-
 				canvas.DrawBitmap(img, 0,0); //, canvas.LocalClipBounds);
 
 				if (vm.ShowGrass) {

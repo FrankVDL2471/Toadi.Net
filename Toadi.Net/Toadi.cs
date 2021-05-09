@@ -69,6 +69,46 @@ namespace Toadi.Net {
 
 		}
 
+		public Task<EmergencyStop> GetEmergencyStop() {
+			return _conn.Get<EmergencyStop>("/system/emergencyStop");
+		}
+		public Task<bool> ReleaseEmergencyStop() {
+			return _conn.Send("/navigation/releaseEmergencyStop");
+		}
+
+		public Task<ActrivityInfo> GetActrivityInfo() {
+			return _conn.Get<ActrivityInfo>("/activities/info");
+		}
+
+
+		public async Task<ToadiStatus > GetStatus() {
+			ToadiStatus status = new ToadiStatus();
+
+
+			var act = await this.GetActrivityInfo();
+			if (act?.userActivity == "manualdriving") {
+				status.Modus = "Manual";
+			} else if (string.IsNullOrEmpty(act?.userActivity)) {
+				status.Modus = "Auto";
+			} else {
+				status.Modus = act?.userActivity;			
+			}
+			if (act.scheduledActivity == "docking") {
+				status.Modus = "Docking";
+			}
+			
+
+			var stop = await this.GetEmergencyStop();			
+			if ((string.IsNullOrEmpty(stop.description)) || (stop.description.Equals("none"))) {
+				status.EmergencyLock = false;
+				status.Error = string.Empty;
+			} else {
+				status.EmergencyLock = true;
+				status.Error = stop.description;
+			}
+
+			return status;
+		}
 
 
 	}

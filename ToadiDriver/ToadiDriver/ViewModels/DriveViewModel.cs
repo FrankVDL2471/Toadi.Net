@@ -21,12 +21,15 @@ namespace ToadiDriver.ViewModels {
 			this.CmdLeft = new Command(() => _toadi.Spin(this.Config.SpinRotation, this.Config.SpinSpeed));
 			this.CmdRight = new Command(() => _toadi.Spin(this.Config.SpinRotation * -1.00, this.Config.SpinSpeed));
 
-			this.CmdDock = new Command(async () => {
-				await _toadi.StopManualDriving();
-				await Task.Delay(500);
-				await _toadi.StartDocking();
+			this.CmdDock = new Command(() => {
+				try {
+					_ = _toadi.StopManualDriving();
+					_ = _toadi.StartDocking();
+				} catch (Exception) {
+				}
 			});
 
+			this.CmdRelease = new Command(() => _toadi.ReleaseEmergencyStop() );
 
 		}
 
@@ -42,7 +45,7 @@ namespace ToadiDriver.ViewModels {
 		public ICommand CmdLeft { get; }
 		public ICommand CmdRight { get; }
 		public ICommand CmdDock { get; set; }
-
+		public ICommand CmdRelease { get; set; }
 
 
 		private double _distance = 0;
@@ -71,6 +74,10 @@ namespace ToadiDriver.ViewModels {
 
 		public bool ShowScene { get; set; }
 
+		public Toadi.Net.Models.ToadiStatus Status { get; set; } = new Toadi.Net.Models.ToadiStatus { EmergencyLock = false };
+
+
+
 
 		private bool _manualMode = false;
 		public bool Connect() {
@@ -95,10 +102,21 @@ namespace ToadiDriver.ViewModels {
 			return _toadi.GetImage();
 		}
 
+		int cnt = 0;
 		private bool TimerLoop() {
 			if (!_manualMode) return false;
+			cnt++;
 
 			this.CaluculateJoyStick();
+
+			if (cnt % 5 == 0) {
+				_toadi.GetStatus().ContinueWith(t => {
+					this.Status = t.Result;
+					this.OnPropertyChanged(nameof(this.Status));
+				});
+			}
+
+
 			return true;
 
 		}
