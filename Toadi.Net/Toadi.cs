@@ -15,6 +15,10 @@ namespace Toadi.Net {
 		}
 
 
+		public Task<bool> Stop() {
+			return _conn.Send("/navitaion/stop");
+		}
+
 		public Task<bool> Spin(double rotation, double speed = 0.15, WheelLock wheelLock = WheelLock.None) {
 			return _conn.Send($"/navigation/spinaround?speed={speed.ToString(CultureInfo.InvariantCulture)}&rotation={rotation.ToString(CultureInfo.InvariantCulture)}&wheelLock={wheelLock.ToString().ToLower()}&powerLimit=1.0");
 		}

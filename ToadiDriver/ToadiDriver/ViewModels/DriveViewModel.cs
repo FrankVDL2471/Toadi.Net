@@ -45,31 +45,45 @@ namespace ToadiDriver.ViewModels {
 
 
 
-		private bool _showImage = false;
+		private double _distance = 0;
+		public double Distance {
+			get { return _distance; }
+			set {
+				_distance = value;
+				//CaluculateJoyStick();
+				//Console.WriteLine("Distance : " + _distance);
+			}
+		}
 
+
+		private double _angle = 0;
+		public double Angle {
+			get { return _angle;  }
+			set {
+				_angle = value;
+				//CaluculateJoyStick();
+				//Console.WriteLine("Angle : " + _angle);
+			}
+		}
+
+
+
+		private bool _manualMode = false;
 		public bool Connect() {
 			if (string.IsNullOrEmpty(this.Config?.IpAddress)) return false;
 			_toadi = new Toadi.Net.Toadi(this.Config.IpAddress);
 
-
+			_manualMode = true;
 			_ = _toadi.StartManualDriving();
-			_showImage = true;
-			//			_ = this.UpdateImage();
 
-			double fpsWanted = 30; //30 frames per seconde
-			var ms = 1000.0 / fpsWanted;
-			var ts = TimeSpan.FromMilliseconds(ms);
-
-			// Create a timer that triggers roughly every 1/30 seconds
-			//Device.StartTimer(ts, TimerLoop);
-
+			Device.StartTimer(TimeSpan.FromMilliseconds(750), this.TimerLoop);
 
 			return true;
 		}
 
 		public void Disconnect() {
+			_manualMode = false;
 			_ = _toadi.StopManualDriving();
-			_showImage = false;
 		}
 
 
@@ -77,62 +91,89 @@ namespace ToadiDriver.ViewModels {
 			return _toadi.GetImage();
 		}
 
-
 		private bool TimerLoop() {
-			if (!_showImage) return false;
+			if (!_manualMode) return false;
+
+			this.CaluculateJoyStick();
+			return true;
+
+		}
 
 
-
-			_ = Xamarin.Forms.Device.InvokeOnMainThreadAsync(async () => {
-
-
-				try {
-					byte[] data = await _toadi.GetImage();
-					MemoryStream ms = new MemoryStream(data);
-
-					this.Camera = ImageSource.FromStream(() => ms);
-					base.OnPropertyChanged(nameof(Camera));
-				} catch (Exception ex) {
-
+		private double _prevDistance = 0;
+		public void CaluculateJoyStick() {
+			if (this.Distance == 0) {
+				if (_prevDistance > 0) {
+					_toadi.Stop();
+					_prevDistance = 0;
 				}
-
-
-				//this.CameraUrl = $"http://{this.Config.IpAddress}:8080/image/front/img.jpg?timestamp={DateTime.Now.Ticks}";
-				//this.Camera = ImageSource.FromUri(new Uri(this.CameraUrl));
-				//base.OnPropertyChanged(nameof(Camera));
-
-				//this.Image = ImageSource.FromFile("dr_noprofile.png");
-			});
-
-
-			return true;
-
-		}
-
-
-
-		private async Task<bool> UpdateImage() {
-			while(_showImage) {
-
-				this.CameraUrl = $"http://{this.Config.IpAddress}:8080/image/front/img.jpg?timestamp={DateTime.Now.Ticks}";
-				this.Camera = ImageSource.FromUri(new Uri(this.CameraUrl));
-
-				base.OnPropertyChanged(nameof(Camera));
-				//base.OnPropertyChanged(nameof(CameraUrl));
-
-				//try {
-				//	byte[] data = await _toadi.GetImage();
-				//	MemoryStream ms = new MemoryStream(data);
-				//	this.Camera = ImageSource.FromStream(() => ms);
-				//	base.OnPropertyChanged(nameof(Camera));
-				//} catch (Exception ex) {
-
-				//}
-
-				await Task.Delay(250);
+				return;
 			}
-			return true;
+			_prevDistance = this.Distance;
+
+			double powerPercentage = _distance / 100;
+			double speed = this.Config.DriveSpeed / powerPercentage;
+			double rotation = this.Config.SpinRotation / powerPercentage;
+
+			
+			if ((_angle > 360 - 45) || (_angle < 45)) {
+				Console.WriteLine($"Drive Forward : speed={speed}");
+				_toadi.Forward(this.Config.DriveDistance, speed);
+			} else if ((_angle > 90 - 45) && (_angle < 90 + 45)) {
+				//spin right
+				Console.WriteLine($"Turn right : speed={speed}");
+				_toadi.Spin(this.Config.SpinRotation * -1, speed);
+			} else if ((_angle > 180 - 45) && (_angle < 180 + 45)) {
+				Console.WriteLine($"Drive Backward : speed={speed}");
+				_toadi.Backward(this.Config.DriveDistance, speed);
+			} else {
+				//spin left
+				Console.WriteLine($"Turn Left : speed={speed}");
+				_toadi.Spin(this.Config.SpinRotation, speed);
+			}
+
+
+
+			//drive and turn in one command does not seem to work anymore
+			//	var requestedTurnAngle = Math.Abs(toadiDirection);
+
+			//	var straightTurnRadiusPart = 30; //degrees
+			//	var minTurnRadius = 0.1;
+			//	var maxTurnRadius = 2;
+			//	var turnRadiusRange = 90 - straightTurnRadiusPart; //degrees
+			//						if(requestedTurnAngle<straightTurnRadiusPart) {
+			//								minTurnRadius = 2;
+			//								maxTurnRadius = 5;
+			//								turnRadiusRange = straightTurnRadiusPart;
+			//						}
+
+			//						else {
+			//	requestedTurnAngle -= straightTurnRadiusPart;
+			//}
+
+			//var turnPercentage = requestedTurnAngle / turnRadiusRange;
+			//var turnRadius = (minTurnRadius * turnPercentage) + maxTurnRadius * (1 - turnPercentage);
+			//if (toadiDirection < 0) {
+			//	//right turn
+			//	if (!backwards) {
+			//		turnRadius *= -1;
+			//	}
+			//} else {
+			//	//left turn
+			//	if (backwards) {
+			//		turnRadius *= -1;
+			//	}
+			//}
+
+			//if (backwards) {
+			//		Console.WriteLine($"Backward {this.Config.DriveDistance}, speed={speed}, turn={turnRadius}");
+			//		//_toadi.Backward(this.Config.DriveDistance, speed, turnRadius);
+			//	} else {
+			//		Console.WriteLine($"Forward {this.Config.DriveDistance}, speed={speed}, turn={turnRadius}");
+			//		//_toadi.Forward(this.Config.DriveDistance, speed, turnRadius, turnRadius);
+			//	}
 		}
+
 
 	}
 }

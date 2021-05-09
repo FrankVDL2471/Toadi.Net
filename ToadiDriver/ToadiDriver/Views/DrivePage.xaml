@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ToadiDriver.Views.DrivePage"
 						 xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
+						 xmlns:CustomControls="clr-namespace:ToadiDriver.CustomControls"
              xmlns:vm="clr-namespace:ToadiDriver.ViewModels"
              Title="{Binding Title}">
 
@@ -37,7 +38,39 @@
 			<Image x:Name="Image2" Margin="0" Grid.Row="0"  Aspect="AspectFill" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
 		</Grid>-->
 
-		<Grid Grid.Row="1" Margin="10">
+		<Grid Grid.Row="1" Margin="10" >
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+
+
+			<Grid Grid.Row="0" Grid.Column="0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+
+				<Button Text="Dock" Grid.Column="0" Grid.Row="0" BackgroundColor="LightGray" Command="{Binding CmdDock}" />
+			</Grid>
+			
+
+			<CustomControls:JoystickControl x:Name="JoystickControl" Grid.Row="0" Grid.Column="1" 
+																			Angle="{Binding Path=Angle, Mode=OneWayToSource}" Distance="{Binding Path=Distance, Mode=OneWayToSource}"
+																		BackgroundColor="#ececec"
+																		HorizontalOptions="Center" VerticalOptions="Center" 
+                                    HeightRequest="250" WidthRequest="150"/>
+
+		</Grid>
+		
+
+
+
+		<!--<Grid Grid.Row="1" Margin="10">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
@@ -56,7 +89,7 @@
 			<Button Text="Right" Grid.Column="3" Grid.Row="0" Grid.RowSpan="2"  Command="{Binding CmdRight}" />
 
 			<Button Text="Dock" Grid.Column="0" Grid.Row="0" BackgroundColor="LightGray" Command="{Binding CmdDock}" />
-		</Grid>
+		</Grid>-->
 
 	</Grid>
 	
